@@ -2,33 +2,60 @@ package main
 
 import (
 	"machine"
-
-	"github.com/soypat/cyw43439"
+	"time"
 )
 
-const (
-	LED = machine.LED
-
-	// UART_ANTENNA_TX = machine.GPIO0
-	// UART_ANTENNA_RX = machine.GPIO1
-)
+const CRSF_BAUD = 420000
 
 func main() {
-	// 1. Initialize the WiFi chip (CYW43439)
-	// On Pico 2 W, this chip controls the LED.
-	// We use the default SPI pins defined by the board target.
-	dev := cyw43439.NewPicoWDevice()
-	cfg := cyw43439.DefaultWifiConfig()
-	err := dev.Init(cfg)
+	// 1. Configure UART0
+	uart := machine.UART0
+	err := uart.Configure(machine.UARTConfig{
+		BaudRate: CRSF_BAUD,
+		TX:       machine.GPIO0,
+		RX:       machine.GPIO1,
+	})
 	if err != nil {
-		println("Could not configure WiFi device:", err.Error())
-		return
+		println("UART Config Error:", err.Error())
 	}
 
-	// 2. The LED is 'GPIO 0' on the *WiFi chip* (not the RP2350)
-	dev.GPIOSet(0, true)
+	println("CRSF Receiver Active - All 16 Channels")
 
-	println("WiFi initialized. Blinking LED...")
+	parser := NewCRSFParser()
 
-	select {}
+	for {
+		// Read available bytes
+		b, err := uart.ReadByte()
+		if err != nil {
+			// No data, wait slightly to prevent CPU pinning if UART is empty
+			time.Sleep(time.Microsecond * 10)
+			continue
+		}
+
+		channels, err := parser.Feed(b)
+		if err != nil {
+			continue
+		}
+
+		if channels != nil {
+			// Group 1: Joysticks (CH1-CH4)
+			print("JOY: [")
+			for i := 0; i < 4; i++ {
+				print(channels[i])
+				if i < 3 {
+					print(" ")
+				}
+			}
+
+			// Group 2: Aux Channels (CH5-CH16)
+			print("] AUX: [")
+			for i := 4; i < 16; i++ {
+				print(channels[i])
+				if i < 15 {
+					print(" ")
+				}
+			}
+			println("]")
+		}
+	}
 }
