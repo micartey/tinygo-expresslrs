@@ -1,0 +1,12 @@
+github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 h1:El6M4kTTCOh6aBiKaUGG7oYTSPP8MxqL4YI3kZKwcP4=
+github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510/go.mod h1:pupxD2MaaD3pAXIBCelhxNneeOaAeabZDe5s4K6zSpQ=
+github.com/soypat/cyw43439 v0.0.0-20260112220010-064a839f63bb h1:qF3a7qm4uKwRcxPWexEIw7lpQaeTcPkTUY8sd+lcZqM=
+github.com/soypat/cyw43439 v0.0.0-20260112220010-064a839f63bb/go.mod h1:oXpTlhrJ/HxN5Ipu5Z57eLI8jadcrUf1eS00PezD9hQ=
+github.com/soypat/seqs v0.0.0-20250630134107-01c3f05666ba h1:NaIxs8iRVTAGBY4xiCy1Jqex3mIPodyLHppYvxUjJEk=
+github.com/soypat/seqs v0.0.0-20250630134107-01c3f05666ba/go.mod h1:oCVCNGCHMKoBj97Zp9znLbQ1nHxpkmOY9X+UAGzOxc8=
+github.com/tinygo-org/pio v0.2.0 h1:vo3xa6xDZ2rVtxrks/KcTZHF3qq4lyWOntvEvl2pOhU=
+github.com/tinygo-org/pio v0.2.0/go.mod h1:LU7Dw00NJ+N86QkeTGjMLNkYcEYMor6wTDpTCu0EaH8=
+golang.org/x/exp v0.0.0-20260112195511-716be5621a96 h1:Z/6YuSHTLOHfNFdb8zVZomZr7cqNgTJvA8+Qz75D8gU=
+golang.org/x/exp v0.0.0-20260112195511-716be5621a96/go.mod h1:nzimsREAkjBCIEFtHiYkrJyT+2uy9YZJB7H1k68CXZU=
+tinygo.org/x/drivers v0.34.0 h1:lw8ePJeUSn9oICKBvQXHC9TIE+J00OfXfkGTrpXM9Iw=
+tinygo.org/x/drivers v0.34.0/go.mod h1:ZdErNrApSABdVXjA1RejD67R8SNRI6RKVfYgQDZtKtk=
