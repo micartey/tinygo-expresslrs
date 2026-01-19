@@ -1,4 +1,7 @@
-# lrs-to-pico
+# tinygo-expresslrs
+
+A tinygo project to handle CRSF packets received by ExpressLRS modules.
+This means that one can use ExpressLRS outside of flightcontrollers etc. and on hobby projects using a pi pico or any other UART capable microcontroller.
 
 ## Getting started
 
