@@ -7,8 +7,19 @@ import (
 
 const CRSF_BAUD = 420000
 
+// Channel values extracted to variables outside of main
+var (
+	CH1, CH2, CH3, CH4     uint16
+	CH5, CH6, CH7, CH8     uint16
+	CH9, CH10, CH11, CH12  uint16
+	CH13, CH14, CH15, CH16 uint16
+
+	Connected     bool
+	LastFrameTime time.Time
+)
+
 func main() {
-	// 1. Configure UART0
+	// Configure UART0
 	uart := machine.UART0
 	err := uart.Configure(machine.UARTConfig{
 		BaudRate: CRSF_BAUD,
@@ -21,41 +32,46 @@ func main() {
 
 	println("CRSF Receiver Active - All 16 Channels")
 
+	// Start the receiver in its own goroutine
+	go runReceiver(uart)
+
+	// Main loop can now perform other tasks while channels update in background
+	for {
+		if !Connected {
+			println("Receiver Disconnected...")
+		} else {
+			if time.Since(LastFrameTime) > 500*time.Millisecond {
+				Connected = false
+			}
+			print("[", CH1, " ", CH2, " - ", CH3, " ", CH4, "]\r\n")
+		}
+		time.Sleep(time.Second)
+	}
+}
+
+func runReceiver(uart *machine.UART) {
 	parser := NewCRSFParser()
 
 	for {
-		// Read available bytes
 		b, err := uart.ReadByte()
 		if err != nil {
-			// No data, wait slightly to prevent CPU pinning if UART is empty
 			time.Sleep(time.Microsecond * 10)
 			continue
 		}
 
 		channels, err := parser.Feed(b)
-		if err != nil {
+		if err != nil || channels == nil {
 			continue
 		}
 
-		if channels != nil {
-			// Group 1: Joysticks (CH1-CH4)
-			print("JOY: [")
-			for i := 0; i < 4; i++ {
-				print(channels[i])
-				if i < 3 {
-					print(" ")
-				}
-			}
+		// Update connection status
+		Connected = true
+		LastFrameTime = time.Now()
 
-			// Group 2: Aux Channels (CH5-CH16)
-			print("] AUX: [")
-			for i := 4; i < 16; i++ {
-				print(channels[i])
-				if i < 15 {
-					print(" ")
-				}
-			}
-			println("]")
-		}
+		// Update global variables
+		CH1, CH2, CH3, CH4 = channels[0], channels[1], channels[2], channels[3]
+		CH5, CH6, CH7, CH8 = channels[4], channels[5], channels[6], channels[7]
+		CH9, CH10, CH11, CH12 = channels[8], channels[9], channels[10], channels[11]
+		CH13, CH14, CH15, CH16 = channels[12], channels[13], channels[14], channels[15]
 	}
 }
