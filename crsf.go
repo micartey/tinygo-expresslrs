@@ -4,6 +4,10 @@ import (
 	"errors"
 )
 
+var (
+	ErrCRCMismatch = errors.New("CRC mismatch")
+)
+
 const (
 	CRSF_ADDRESS_FLIGHT_CONTROLLER    = 0xC8
 	CRSF_FRAMETYPE_RC_CHANNELS_PACKED = 0x16
@@ -14,13 +18,15 @@ const (
 // Length = length of (Type + Payload + CRC8)
 
 type CRSFParser struct {
-	buffer []byte
-	state  int
+	buffer   []byte
+	state    int
+	channels []uint16
 }
 
 func NewCRSFParser() *CRSFParser {
 	return &CRSFParser{
-		buffer: make([]byte, 0, 64),
+		buffer:   make([]byte, 0, 64),
+		channels: make([]uint16, 16),
 	}
 }
 
@@ -62,42 +68,41 @@ func (p *CRSFParser) parseFrame() ([]uint16, error) {
 	calculatedCRC := crsfCRC8(frame[2 : length-1])
 
 	if receivedCRC != calculatedCRC {
-		return nil, errors.New("CRC mismatch")
+		return nil, ErrCRCMismatch
 	}
 
 	frameType := frame[2]
 	if frameType == CRSF_FRAMETYPE_RC_CHANNELS_PACKED {
-		return decodeChannels(frame[3 : length-1]), nil
+		return p.decodeChannels(frame[3 : length-1]), nil
 	}
 
 	return nil, nil
 }
 
-func decodeChannels(payload []byte) []uint16 {
+func (p *CRSFParser) decodeChannels(payload []byte) []uint16 {
 	// 16 channels, 11 bits each = 22 bytes
 	if len(payload) < 22 {
 		return nil
 	}
 
-	channels := make([]uint16, 16)
-	channels[0] = uint16(payload[0]) | (uint16(payload[1]) << 8 & 0x07FF)
-	channels[1] = (uint16(payload[1]) >> 3) | (uint16(payload[2]) << 5 & 0x07FF)
-	channels[2] = (uint16(payload[2]) >> 6) | (uint16(payload[3]) << 2) | (uint16(payload[4]) << 10 & 0x07FF)
-	channels[3] = (uint16(payload[4]) >> 1) | (uint16(payload[5]) << 7 & 0x07FF)
-	channels[4] = (uint16(payload[5]) >> 4) | (uint16(payload[6]) << 4 & 0x07FF)
-	channels[5] = (uint16(payload[6]) >> 7) | (uint16(payload[7]) << 1) | (uint16(payload[8]) << 9 & 0x07FF)
-	channels[6] = (uint16(payload[8]) >> 2) | (uint16(payload[9]) << 6 & 0x07FF)
-	channels[7] = (uint16(payload[9]) >> 5) | (uint16(payload[10]) << 3 & 0x07FF)
-	channels[8] = uint16(payload[11]) | (uint16(payload[12]) << 8 & 0x07FF)
-	channels[9] = (uint16(payload[12]) >> 3) | (uint16(payload[13]) << 5 & 0x07FF)
-	channels[10] = (uint16(payload[13]) >> 6) | (uint16(payload[14]) << 2) | (uint16(payload[15]) << 10 & 0x07FF)
-	channels[11] = (uint16(payload[15]) >> 1) | (uint16(payload[16]) << 7 & 0x07FF)
-	channels[12] = (uint16(payload[16]) >> 4) | (uint16(payload[17]) << 4 & 0x07FF)
-	channels[13] = (uint16(payload[17]) >> 7) | (uint16(payload[18]) << 1) | (uint16(payload[19]) << 9 & 0x07FF)
-	channels[14] = (uint16(payload[19]) >> 2) | (uint16(payload[20]) << 6 & 0x07FF)
-	channels[15] = (uint16(payload[20]) >> 5) | (uint16(payload[21]) << 3 & 0x07FF)
+	p.channels[0] = uint16(payload[0]) | (uint16(payload[1]) << 8 & 0x07FF)
+	p.channels[1] = (uint16(payload[1]) >> 3) | (uint16(payload[2]) << 5 & 0x07FF)
+	p.channels[2] = (uint16(payload[2]) >> 6) | (uint16(payload[3]) << 2) | (uint16(payload[4]) << 10 & 0x07FF)
+	p.channels[3] = (uint16(payload[4]) >> 1) | (uint16(payload[5]) << 7 & 0x07FF)
+	p.channels[4] = (uint16(payload[5]) >> 4) | (uint16(payload[6]) << 4 & 0x07FF)
+	p.channels[5] = (uint16(payload[6]) >> 7) | (uint16(payload[7]) << 1) | (uint16(payload[8]) << 9 & 0x07FF)
+	p.channels[6] = (uint16(payload[8]) >> 2) | (uint16(payload[9]) << 6 & 0x07FF)
+	p.channels[7] = (uint16(payload[9]) >> 5) | (uint16(payload[10]) << 3 & 0x07FF)
+	p.channels[8] = uint16(payload[11]) | (uint16(payload[12]) << 8 & 0x07FF)
+	p.channels[9] = (uint16(payload[12]) >> 3) | (uint16(payload[13]) << 5 & 0x07FF)
+	p.channels[10] = (uint16(payload[13]) >> 6) | (uint16(payload[14]) << 2) | (uint16(payload[15]) << 10 & 0x07FF)
+	p.channels[11] = (uint16(payload[15]) >> 1) | (uint16(payload[16]) << 7 & 0x07FF)
+	p.channels[12] = (uint16(payload[16]) >> 4) | (uint16(payload[17]) << 4 & 0x07FF)
+	p.channels[13] = (uint16(payload[17]) >> 7) | (uint16(payload[18]) << 1) | (uint16(payload[19]) << 9 & 0x07FF)
+	p.channels[14] = (uint16(payload[19]) >> 2) | (uint16(payload[20]) << 6 & 0x07FF)
+	p.channels[15] = (uint16(payload[20]) >> 5) | (uint16(payload[21]) << 3 & 0x07FF)
 
-	return channels
+	return p.channels
 }
 
 var crc8Table = [256]byte{

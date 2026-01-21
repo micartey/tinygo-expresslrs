@@ -43,9 +43,9 @@ func main() {
 			if time.Since(LastFrameTime) > 500*time.Millisecond {
 				Connected = false
 			}
-			print("[", CH1, " ", CH2, " - ", CH3, " ", CH4, "]\r\n")
+			print("[", CH3, " ", CH4, " - ", CH1, " ", CH2, "] ", CH10, "\r\n")
 		}
-		time.Sleep(time.Second)
+		time.Sleep(time.Millisecond * 100)
 	}
 }
 
