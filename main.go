@@ -43,7 +43,8 @@ func main() {
 
 		if !Connected {
 			println("Receiver Disconnected...")
-			print("[", CH3, " ", CH4, " - ", CH1, " ", CH2, "] ", CH10, "\r\n")
+		} else {
+			print("[", CH3, " ", CH4, " - ", CH1, " ", CH2, "] ", CH5, " ", CH10, "\r\n")
 		}
 
 		time.Sleep(time.Millisecond * 100)

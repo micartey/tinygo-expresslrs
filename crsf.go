@@ -85,22 +85,22 @@ func (p *CRSFParser) decodeChannels(payload []byte) []uint16 {
 		return nil
 	}
 
-	p.channels[0] = uint16(payload[0]) | (uint16(payload[1]) << 8 & 0x07FF)
-	p.channels[1] = (uint16(payload[1]) >> 3) | (uint16(payload[2]) << 5 & 0x07FF)
-	p.channels[2] = (uint16(payload[2]) >> 6) | (uint16(payload[3]) << 2) | (uint16(payload[4]) << 10 & 0x07FF)
-	p.channels[3] = (uint16(payload[4]) >> 1) | (uint16(payload[5]) << 7 & 0x07FF)
-	p.channels[4] = (uint16(payload[5]) >> 4) | (uint16(payload[6]) << 4 & 0x07FF)
-	p.channels[5] = (uint16(payload[6]) >> 7) | (uint16(payload[7]) << 1) | (uint16(payload[8]) << 9 & 0x07FF)
-	p.channels[6] = (uint16(payload[8]) >> 2) | (uint16(payload[9]) << 6 & 0x07FF)
-	p.channels[7] = (uint16(payload[9]) >> 5) | (uint16(payload[10]) << 3 & 0x07FF)
-	p.channels[8] = uint16(payload[11]) | (uint16(payload[12]) << 8 & 0x07FF)
-	p.channels[9] = (uint16(payload[12]) >> 3) | (uint16(payload[13]) << 5 & 0x07FF)
-	p.channels[10] = (uint16(payload[13]) >> 6) | (uint16(payload[14]) << 2) | (uint16(payload[15]) << 10 & 0x07FF)
-	p.channels[11] = (uint16(payload[15]) >> 1) | (uint16(payload[16]) << 7 & 0x07FF)
-	p.channels[12] = (uint16(payload[16]) >> 4) | (uint16(payload[17]) << 4 & 0x07FF)
-	p.channels[13] = (uint16(payload[17]) >> 7) | (uint16(payload[18]) << 1) | (uint16(payload[19]) << 9 & 0x07FF)
-	p.channels[14] = (uint16(payload[19]) >> 2) | (uint16(payload[20]) << 6 & 0x07FF)
-	p.channels[15] = (uint16(payload[20]) >> 5) | (uint16(payload[21]) << 3 & 0x07FF)
+	p.channels[0] = (uint16(payload[0]) | uint16(payload[1])<<8) & 0x07FF
+	p.channels[1] = (uint16(payload[1])>>3 | uint16(payload[2])<<5) & 0x07FF
+	p.channels[2] = (uint16(payload[2])>>6 | uint16(payload[3])<<2 | uint16(payload[4])<<10) & 0x07FF
+	p.channels[3] = (uint16(payload[4])>>1 | uint16(payload[5])<<7) & 0x07FF
+	p.channels[4] = (uint16(payload[5])>>4 | uint16(payload[6])<<4) & 0x07FF
+	p.channels[5] = (uint16(payload[6])>>7 | uint16(payload[7])<<1 | uint16(payload[8])<<9) & 0x07FF
+	p.channels[6] = (uint16(payload[8])>>2 | uint16(payload[9])<<6) & 0x07FF
+	p.channels[7] = (uint16(payload[9])>>5 | uint16(payload[10])<<3) & 0x07FF
+	p.channels[8] = (uint16(payload[11]) | uint16(payload[12])<<8) & 0x07FF
+	p.channels[9] = (uint16(payload[12])>>3 | uint16(payload[13])<<5) & 0x07FF
+	p.channels[10] = (uint16(payload[13])>>6 | uint16(payload[14])<<2 | uint16(payload[15])<<10) & 0x07FF
+	p.channels[11] = (uint16(payload[15])>>1 | uint16(payload[16])<<7) & 0x07FF
+	p.channels[12] = (uint16(payload[16])>>4 | uint16(payload[17])<<4) & 0x07FF
+	p.channels[13] = (uint16(payload[17])>>7 | uint16(payload[18])<<1 | uint16(payload[19])<<9) & 0x07FF
+	p.channels[14] = (uint16(payload[19])>>2 | uint16(payload[20])<<6) & 0x07FF
+	p.channels[15] = (uint16(payload[20])>>5 | uint16(payload[21])<<3) & 0x07FF
 
 	return p.channels
 }
