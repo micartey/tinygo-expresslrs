@@ -3,6 +3,8 @@ package main
 import (
 	"machine"
 	"time"
+
+	crsf "github.com/micartey/tinygo-expresslrs"
 )
 
 // Make sure the baud rate is the same as configured on the LRS Receiver!
@@ -52,7 +54,7 @@ func main() {
 }
 
 func runReceiver(uart *machine.UART) {
-	parser := NewCRSFParser()
+	parser := crsf.NewCRSFParser()
 
 	for {
 		b, err := uart.ReadByte()

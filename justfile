@@ -1,5 +1,5 @@
 build:
-    tinygo flash -target=pico2-w .
+    tinygo flash -target=pico2-w ./examples/pico
 
 run: build
     tinygo monitor
